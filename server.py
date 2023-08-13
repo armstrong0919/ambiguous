@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
-
+import logging
+import json
 hostName = "0.0.0.0"
 serverPort = 8080
 
@@ -14,6 +15,20 @@ class MyServer(BaseHTTPRequestHandler):
         self.wfile.write(bytes("<body>", "utf-8"))
         self.wfile.write(bytes("<p>This is an example web server.</p>", "utf-8"))
         self.wfile.write(bytes("</body></html>", "utf-8"))
+
+    def do_POST(self):
+        print(self.headers)
+        print(self.command)
+        req_datas = self.rfile.read(int(self.headers['content-length']))
+        print(req_datas)
+        data = {
+            'result_code': '1',
+            'result_desc': 'Success'
+        }
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(data).encode('utf-8'))
 
 if __name__ == "__main__":        
     webServer = HTTPServer((hostName, serverPort), MyServer)
